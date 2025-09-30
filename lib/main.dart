@@ -87,7 +87,13 @@ class _HomePageState extends State<HomePage> {
           );
         }
       } catch (e) {
-        // Handle error
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to load locations.'),
+            ),
+          );
+        }
       } finally {
         if (mounted) Navigator.of(context).pop();
       }
@@ -395,15 +401,18 @@ class _HomePageState extends State<HomePage> {
                   options: MapOptions(
                     initialCenter:
                         _userMarker ??
-                        const LatLng(17.3850, 78.4867), // Starting point: Hyderabad
+                        const LatLng(
+                          17.3850,
+                          78.4867,
+                        ), // Starting point: Hyderabad
                     initialZoom: 9.2,
-          
+
                     onLongPress: (tapPosition, latLng) {
                       setState(() {
                         _userMarker = latLng;
                         _resetVendorDetails();
                       });
-          
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
@@ -416,7 +425,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                   children: [
                     TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.example.vendor_distance_app',
                     ),
                     if (_userMarker != null)
@@ -443,7 +453,7 @@ class _HomePageState extends State<HomePage> {
                             })
                             .toList(),
                       ),
-          
+
                     if (_userMarker != null)
                       MarkerLayer(
                         markers: _vendors
@@ -453,15 +463,16 @@ class _HomePageState extends State<HomePage> {
                                 vendor.latitude,
                                 vendor.longitude,
                               );
-          
+
                               final midPoint = LatLng(
-                                (_userMarker!.latitude + vendorLocation.latitude) /
+                                (_userMarker!.latitude +
+                                        vendorLocation.latitude) /
                                     2,
                                 (_userMarker!.longitude +
                                         vendorLocation.longitude) /
                                     2,
                               );
-          
+
                               return Marker(
                                 point: midPoint,
                                 width: 120,
@@ -515,16 +526,22 @@ class _HomePageState extends State<HomePage> {
                     final vendor = nearbyVendors[index];
                     return SizedBox(
                       width: 300,
-                      child: _VendorListCard(vendor: vendor, onTap: () {
-                        final location = LatLng(vendor.latitude, vendor.longitude);
-                        _mapController.move(location, 16.0);
-                        _showVendorDetails(vendor);
-                      }),
+                      child: _VendorListCard(
+                        vendor: vendor,
+                        onTap: () {
+                          final location = LatLng(
+                            vendor.latitude,
+                            vendor.longitude,
+                          );
+                          _mapController.move(location, 16.0);
+                          _showVendorDetails(vendor);
+                        },
+                      ),
                     );
                   },
                 ),
               ),
-            )
+            ),
         ],
       ),
     );
