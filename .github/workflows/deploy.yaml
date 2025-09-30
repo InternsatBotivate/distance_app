@@ -20,6 +20,7 @@ jobs:
           channel: 'stable'
 
       - run: flutter pub get
+      - run: echo "${{ secrets.APPS_SCRIPT_URL }}" > .env
       - run: echo "APPS_SCRIPT_URL=${{ secrets.APPS_SCRIPT_URL }}" > .env
       - run: flutter build web --release --base-href "/distance_app/"
 
