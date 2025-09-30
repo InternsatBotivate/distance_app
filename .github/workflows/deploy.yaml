@@ -20,7 +20,7 @@ jobs:
           channel: 'stable'
 
       - run: flutter pub get
-      - run: echo "API_URL=${{ secrets.APPS_SCRIPT_URL }}" > .env
+      - run: echo "APPS_SCRIPT_URL=${{ secrets.APPS_SCRIPT_URL }}" > .env
       - run: flutter build web --release --base-href "/distance_app/"
 
       - uses: peaceiris/actions-gh-pages@v3
@@ -48,7 +48,7 @@ jobs:
       - run: flutter pub get
       
       # Build the APK
-      - run: echo "API_URL=${{ secrets.APPS_SCRIPT_URL }}" > .env
+      - run: echo "APPS_SCRIPT_URL=${{ secrets.APPS_SCRIPT_URL }}" > .env
       - run: flutter build apk --release
 
       # Create a new GitHub release
