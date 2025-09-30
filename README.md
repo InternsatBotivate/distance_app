@@ -1,48 +1,76 @@
-# vendor_distance_app
+# Vendor Distance Explorer
 
-A new Flutter project.
+A smart, interactive Flutter application for discovering nearby vendors. This app provides a dynamic map interface, real-time distance and duration calculations, and intelligent search functionality to connect users with vendor locations effortlessly.
 
+![Vendor Distance Explorer Screenshot](https://i.imgur.com/your-screenshot-url.png)
+*(Replace this with a screenshot of your app)*
 
-Ohk I'm very impressed with what I have done, but before we proceed, let me explain to you what I want to build.
+## ✨ Features
 
+-   **🌐 Interactive OpenStreetMap:** A smooth, responsive map interface powered by `flutter_map`.
+-   **📍 Dynamic User Anchor:**
+    -   **GPS Location:** Starts by automatically fetching your current location.
+    -   **Long-Press to Move:** Tap and hold anywhere on the map to set a new starting point.
+    -   **Geocoding Search:** Type any address into the search bar to pin a precise location.
+-   **🧠 Smart Vendor Search:**
+    -   Finds all vendors within a set radius of your anchor point.
+    -   **Intelligent Fallback:** If no vendors are found in the radius, the app automatically finds and displays the 5 closest vendors.
+-   **🚗 Real-Time Distance & ETA:**
+    -   Fetches actual road distance and estimated travel duration from a Google Apps Script API.
+    -   Displays this information directly on the lines connecting you to each nearby vendor.
+-   **📊 Dynamic UI:**
+    -   Visualizes connections with styled polylines on the map.
+    -   Nearby vendor markers are highlighted and enlarged for easy identification.
+-   **🧾 Sorted Vendor List:**
+    -   Displays a horizontal, scrollable list of all nearby vendors.
+    -   Automatically sorted from closest to farthest based on real-time travel distance.
+-   **ℹ️ Detailed Vendor Info:**
+    -   Tap any vendor to bring up a detailed bottom sheet with their name, address, distance, and ETA.
+    -   **On-Demand Fetching:** If you tap a vendor that isn't "nearby," the app fetches its details instantly.
+-   **🚘 Google Maps Integration:** Launch turn-by-turn navigation directly from the vendor details sheet with a single tap.
+-   **🔐 Secure Configuration:** API URLs are managed securely using a `.env` file.
 
-first lets start with some terminologies,
+## 🚀 Getting Started
 
+### Prerequisites
 
-user marker: the marker that can be adjusted by user. Initially set to user's current location.
+-   Ensure you have Flutter (version 3.13 or later) installed.
+-   An internet connection to fetch map tiles and API data.
 
+### Installation
 
-vendor marker: the marker showing the location of a vendor.
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://your-repository-url.git](https://your-repository-url.git)
+    cd your_project_directory
+    ```
 
+2.  **Create a `.env` file:**
+    In the root of the project, create a file named `.env` and add your Google Apps Script URL:
+    ```
+    APPS_SCRIPT_URL=[https://script.google.com/macros/s/YOUR_APPS_SCRIPT_ID/exec](https://script.google.com/macros/s/YOUR_APPS_SCRIPT_ID/exec)
+    ```
 
-Now I basically want a app, which tells user there nearby vendors, with distance and duration.
+3.  **Fetch packages:**
+    ```bash
+    flutter pub get
+    ```
 
+4.  **Run the app:**
+    ```bash
+    flutter run
+    ```
 
-So when the user chooses a location, only vendors close by popup, initial all vendors are visible but small, and the vendor marker shows the name, and a line is drawn from initial position to the vendor marker. Only vendor in a certain radius have the line drawn, and there icon size is increased. The line connecting vendor and user marker, show duration and distance, for which I have an api. 
+### Platform Setup
 
+-   **Android:** Location permissions are handled by `geolocator`. No other setup is required for debugging.
+-   **iOS:** Make sure to provide a description for location usage in `ios/Runner/Info.plist`.
+-   **Web:** Location access requires a secure context (`localhost` or `https://`). The permission prompt is triggered by a user action (clicking the "My Location" button).
 
-To start this process, the user clicks a find button, which basically hits request to my api, with the initial points set at user location, and final points as vendors that are close by. to find the close by vendors we use a normal mathematical function that finds the distances based on latitude and longitude, but this distance just to show that the location is in radius, to get the real distance we use the api. The use can change the radius. In a modal, but that is optional. 
+## 🏗️ Architecture
 
-
-When the user clicks on a vendor, it show the following details in a bottom sheet,
-
-
-Name:
-
-Address:
-
-Distance: (fetched from api)
-
-Duration: (fetched from api)
-
-
-
-If the user click on a non highlighted vendor, the the duration and distance data is fetched from the api on click. 
-
-this sheet also has a button that redirects to google maps with directions.
-
-
-The user can also input the location in a text box, which sends a request to an geocoding api I have, which basically if successful returns lat and lon of the location, so we can set the user marker there, if unsuccesfull we can show user a friendly error message saying invalid location or something. Also this app should have good loading screens and stuff, but thats all for a later point.
-
-
-Is it doable?
+-   **`lib/main.dart`**: The main entry point of the app, containing the home page, state management, and primary UI widgets. It handles all map interactions and state changes.
+-   **`lib/models/vendor.dart`**: Defines the `Vendor` data model, including a `copyWith` method for immutable state updates.
+-   **`lib/widgets/vendor_bottom_sheet.dart`**: A separate, reusable widget for displaying detailed vendor information.
+-   **Services (Google Apps Script):** All external data (vendor lists, distance calculations, geocoding) is fetched from a single, robust Google Apps Script endpoint.
+-   **State Management:** The app uses `StatefulWidget` and `setState` for managing the UI state, including user location, vendor lists, and loading statuses.
