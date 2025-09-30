@@ -1,30 +1,74 @@
-name: Build & Deploy Flutter Web
+name: Build & Deploy
 
 on:
   push:
     branches:
-      - main   # change if your main branch is different
+      - main  # change if your main branch is different
+
+# Add this permissions block
+permissions:
+  contents: write
 
 jobs:
-  build-deploy:
+  build-deploy-web:
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout repo
       - uses: actions/checkout@v3
 
-      # Install Flutter
       - uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: 'stable'
 
-      # Build Flutter web
       - run: flutter pub get
       - run: echo "API_URL=${{ secrets.API_URL }}" > .env
       - run: flutter build web --release --base-href "/distance_app/"
 
-      # Deploy to GitHub Pages
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
+
+  build-release-apk:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout repo
+      - uses: actions/checkout@v3
+
+      # Setup Java
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      # Setup Flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - run: flutter pub get
+      
+      # Build the APK
+      - run: flutter build apk --release
+
+      # Create a new GitHub release
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }} # Creates a tag like v1, v2, v3
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      # Upload the APK to the release
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/app/outputs/flutter-apk/app-release.apk
+          asset_name: app-release.apk
+          asset_content_type: application/vnd.android.package-archive
