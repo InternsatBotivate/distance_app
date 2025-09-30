@@ -13,6 +13,7 @@ jobs:
   build-deploy-web:
     runs-on: ubuntu-latest
     steps:
+      - run: echo "${{ secrets.APPS_SCRIPT_URL }}"
       - uses: actions/checkout@v3
 
       - uses: subosito/flutter-action@v2
@@ -20,7 +21,6 @@ jobs:
           channel: 'stable'
 
       - run: flutter pub get
-      - run: echo "${{ secrets.APPS_SCRIPT_URL }}"
       - run: echo "APPS_SCRIPT_URL=${{ secrets.APPS_SCRIPT_URL }}" > .env
       - run: flutter build web --release --base-href "/distance_app/"
 
