@@ -20,6 +20,7 @@ jobs:
 
       # Build Flutter web
       - run: flutter pub get
+      - run: echo "API_URL=${{ secrets.API_URL }}" > .env
       - run: flutter build web --release --base-href "/distance_app/"
 
       # Deploy to GitHub Pages
