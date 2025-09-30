@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -9,8 +8,9 @@ import 'package:http/http.dart' as http;
 import 'package:vendor_distance_app/models/vendor.dart';
 import 'package:vendor_distance_app/widgets/vendor_sheet.dart';
 
+const String APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzDApNHkK-OLiXHZTkxl7RcDh_J3frdUuOuXlX-l2iVZt2HMoFXr4KjZ5bJl2lSsu6HuA/exec';
+
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
   runApp(const DistanceApp());
 }
 
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
 
       try {
         final url =
-            dotenv.env['APPS_SCRIPT_URL']! +
+            APPS_SCRIPT_URL +
             '?lat1=${_userMarker!.latitude}&lon1=${_userMarker!.longitude}' +
             '&lat2=${vendor.latitude}&lon2=${vendor.longitude}';
 
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
       _isGeocoding = true;
     });
 
-    final url = dotenv.env['APPS_SCRIPT_URL']!;
+    final url = APPS_SCRIPT_URL;
     final requestBody = jsonEncode({
       'addresses': [address],
     });
@@ -226,7 +226,7 @@ class _HomePageState extends State<HomePage> {
 
         try {
           final url =
-              dotenv.env['APPS_SCRIPT_URL']! +
+              APPS_SCRIPT_URL +
               '?lat1=${_userMarker!.latitude}&lon1=${_userMarker!.longitude}' +
               '&lat2=${vendor.latitude}&lon2=${vendor.longitude}';
 
@@ -271,7 +271,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchVendors() async {
-    final String? url = dotenv.env['APPS_SCRIPT_URL'];
+    final String? url = APPS_SCRIPT_URL;
 
     if (url == null) {
       print('Could not find the APPS_SCRIPT_URL in .env file');
