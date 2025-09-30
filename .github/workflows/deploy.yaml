@@ -48,6 +48,7 @@ jobs:
       - run: flutter pub get
       
       # Build the APK
+      - run: echo "API_URL=${{ secrets.APPS_SCRIPT_URL }}" > .env
       - run: flutter build apk --release
 
       # Create a new GitHub release
